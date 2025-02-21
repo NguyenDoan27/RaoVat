@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragments.StoreConfirmFragment">
+
+   <androidx.recyclerview.widget.RecyclerView
+       android:id="@+id/rcv_confirm"
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:layout_margin="8sp"
+       />
+   <TextView
+       android:visibility="gone"
+       android:id="@+id/tvNoItem"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+      android:text="Không có "
+      android:textColor="@color/red"
+      android:textStyle="bold"
+      android:layout_gravity="center"
+      />
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

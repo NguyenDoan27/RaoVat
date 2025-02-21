@@ -1,0 +1,9 @@
+package com.example.raovat_app.interfaces
+
+import com.example.raovat_app.classes.Response
+
+
+interface ICartCallback {
+    fun onSuccess(response: Response<*>)
+    fun onError(error: String)
+}
