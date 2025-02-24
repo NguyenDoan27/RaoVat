@@ -12,7 +12,6 @@ class Product {
     private var origin: String? = null
     private var trademark : String? = null
     private var description: String? = null
-    private var other: List<Combination>? = null
     private var idStore: Int? = null
     private var address: String? = null
     private var idProduct: Int? = null
@@ -21,7 +20,7 @@ class Product {
     private var idCart: Int? = null
     private var nameStore: String? = null
 
-    constructor(name: String, price: Int, amount: Int, material: String, origin: String, trademark: String, description: String, other: List<Combination>, idStore: Int){
+    constructor(name: String, price: Int, amount: Int, material: String, origin: String, trademark: String, description: String, idStore: Int){
         this.name = name
         this.price = price
         this.material = material
@@ -29,7 +28,6 @@ class Product {
         this.amount = amount
         this.trademark = trademark
         this.description = description
-        this.other = other
         this.idStore = idStore
     }
     constructor(idProduct: Int,name: String, price: Int, material: String, origin: String, trademark: String, description: String, sales: Int){

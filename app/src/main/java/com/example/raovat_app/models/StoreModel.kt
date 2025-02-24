@@ -171,11 +171,14 @@ class StoreModel {
                 if (response.isSuccessful){
                     val responseBody = response.body()?.string()
                     val jsonObject = JSONObject(responseBody!!)
-                    val product: Product = jsonObject.getString("product") as Product
-                    val data2 = jsonObject.getJSONArray("image")
+                    Log.e("TAG", "getInfoProduct: ${jsonObject.getJSONArray("product")[0]}", )
+
+                    val data2 = jsonObject.getJSONArray("images")
                     val gson = Gson()
+                    val product = gson.fromJson((jsonObject.getJSONArray("product")[0]).toString(), Product::class.java)
                     val listType = object: TypeToken<List<Image>>() {}.type
                     val images: List<Image> = gson.fromJson(data2.toString(), listType)
+                    Log.e("TAG", "getInfoProduct: ${images[0].getUrl()}", )
                     return@withContext StoreResult2.Success(product, images)
                 }else{
                     val errorBody = response.errorBody()?.string()

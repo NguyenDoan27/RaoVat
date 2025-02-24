@@ -1,7 +1,5 @@
 package com.example.raovat_app.fragments
 
-import android.app.Activity
-import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -14,13 +12,16 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.lifecycleScope
+import com.bumptech.glide.Glide
 import com.example.raovat_app.databinding.FragmentAddNewBinding
-import com.example.raovat_app.classes.Combination
+import com.example.raovat_app.classes.Image
 import com.example.raovat_app.classes.Product
 import com.example.raovat_app.classes.Response
 import com.example.raovat_app.controllers.ProductController
+import com.example.raovat_app.controllers.StoreController
 import com.example.raovat_app.models.ProductModels
 import com.example.raovat_app.interfaces.ResponseCallback
+import com.example.raovat_app.models.StoreModel
 import com.google.gson.Gson
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -33,16 +34,15 @@ import java.io.FileOutputStream
 
 class AddNewFragment : Fragment(), ResponseCallback {
     private lateinit var binding:FragmentAddNewBinding
-    private  var list : MutableList<Combination> = ArrayList()
-    private lateinit var luncher : ActivityResultLauncher<Intent>
     private var id = ""
-    private var idProduct: Int?= null
     private val productModel = ProductModels()
     private val productController = ProductController(productModel, this)
-
+    private var isLoading = false
     private lateinit var pickerMedia: ActivityResultLauncher<PickVisualMediaRequest>
     private var index = -1
     private val imageParts = mutableListOf<MultipartBody.Part>()
+    private var storeModel : StoreModel? = null
+    private var storeController : StoreController? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,20 +62,14 @@ class AddNewFragment : Fragment(), ResponseCallback {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentAddNewBinding.inflate(inflater, container, false)
+
+        storeModel = StoreModel()
+        storeController = StoreController(storeModel!!, this)
         return binding.root
-    }
-
-    override fun onResume() {
-        super.onResume()
-
-        if (idProduct!! > 0 ){
-
-        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
 
         binding.layoutImgSelected0.setOnClickListener {
             selectImage(0)
@@ -95,11 +89,11 @@ class AddNewFragment : Fragment(), ResponseCallback {
 
 
         id = arguments?.getString("id").toString()
-        idProduct = arguments?.getInt("keyProduct", -1)
 
         binding.layoutSave.setOnClickListener{
             saveProduct()
         }
+
     }
 
     private fun saveProduct(){
@@ -117,7 +111,6 @@ class AddNewFragment : Fragment(), ResponseCallback {
                     binding.edOriginProduct.text.toString(),
                     binding.edTradeMarkProduct.text.toString(),
                     binding.edDescriptionProduct.text.toString(),
-                    list,
                     id.toInt()
                 )
                 imageParts.clear()
@@ -178,31 +171,26 @@ class AddNewFragment : Fragment(), ResponseCallback {
             0 -> {
                 binding.img01.setImageURI(uri)
                 binding.img01.visibility = View.VISIBLE
-                binding.layoutImgSelected01.visibility = View.GONE
                 binding.img01.tag = uri.toString()  // Lưu trữ URI vào tag của ImageView
             }
             1 -> {
                 binding.img11.setImageURI(uri)
                 binding.img11.visibility = View.VISIBLE
-                binding.layoutImgSelected11.visibility = View.GONE
                 binding.img11.tag = uri.toString()  // Lưu trữ URI vào tag của ImageView
             }
             2 -> {
                 binding.img21.setImageURI(uri)
                 binding.img21.visibility = View.VISIBLE
-                binding.layoutImgSelected21.visibility = View.GONE
                 binding.img21.tag = uri.toString()  // Lưu trữ URI vào tag của ImageView
             }
             3 -> {
                 binding.img31.setImageURI(uri)
                 binding.img31.visibility = View.VISIBLE
-                binding.layoutImgSelected31.visibility = View.GONE
                 binding.img31.tag = uri.toString()  // Lưu trữ URI vào tag của ImageView
             }
             4 -> {
                 binding.img41.setImageURI(uri)
                 binding.img41.visibility = View.VISIBLE
-                binding.layoutImgSelected41.visibility = View.GONE
                 binding.img41.tag = uri.toString()  // Lưu trữ URI vào tag của ImageView
             }
         }
@@ -251,13 +239,81 @@ class AddNewFragment : Fragment(), ResponseCallback {
             is Response.Success -> {
                 showMessenger(response.value as String)
             }
-            is Response.SuccessWithExtra<*,*> -> TODO()
+            is Response.SuccessWithExtra<*,*> -> {
+               fillData(response.value as Product, response.value1 as List<Image>)
+            }
             is Response.SuccessWith3Params<*,*,*> -> TODO()
         }
     }
 
     override fun onError(error: String) {
         showMessenger(error)
+    }
+
+    private fun fillData(product: Product, images: List<Image>){
+        binding.edNameProduct.setText(product.getName())
+        binding.edPriceProduct.setText(product.getPrice().toString())
+        binding.edMaterialProduct.setText(product.getMaterial())
+        binding.edAmount.setText(product.getAmount().toString())
+        binding.edOriginProduct.setText(product.getOrigin())
+        binding.edTradeMarkProduct.setText(product.getTrademark())
+        binding.edDescriptionProduct.setText(product.getDescription())
+        for ( i in images.indices){
+            when(i){
+                0 -> {
+                    Glide.with(requireContext()).load(images[i].getUrl()).into(binding.img01)
+                    binding.img01.visibility = View.VISIBLE
+                }
+                1 -> {
+                    Glide.with(requireContext()).load(images[i].getUrl()).into(binding.img11)
+                    binding.img11.visibility = View.VISIBLE
+                }
+                2 -> {
+                    Glide.with(requireContext()).load(images[i].getUrl()).into(binding.img21)
+                    binding.img21.visibility = View.VISIBLE
+                }
+                3 -> {
+                    Glide.with(requireContext()).load(images[i].getUrl()).into(binding.img31)
+                    binding.img31.visibility = View.VISIBLE
+                }
+                4 -> {
+                    binding.img41.visibility = View.VISIBLE
+                    Glide.with(requireContext()).load(images[i].getUrl()).into(binding.img41)
+                }
+            }
+        }
+    }
+
+    fun updateData(key: Int){
+        isLoading = true
+        lifecycleScope.launch {
+            storeController!!.getInfoProduct(key)
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        if (isLoading){
+            isLoading = false
+        }else{
+            emptyForm()
+        }
+    }
+
+    private fun emptyForm(){
+        binding.edNameProduct.setText("")
+        binding.edPriceProduct.setText("")
+        binding.edMaterialProduct.setText("")
+        binding.edAmount.setText("")
+        binding.edOriginProduct.setText("")
+        binding.edTradeMarkProduct.setText("")
+        binding.edDescriptionProduct.setText("")
+        binding.img01.visibility = View.GONE
+        binding.img11.visibility = View.GONE
+        binding.img21.visibility = View.GONE
+        binding.img31.visibility = View.GONE
+        binding.img41.visibility = View.GONE
     }
 
 }

@@ -1,6 +1,7 @@
 package com.example.raovat_app.adapters
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
@@ -11,12 +12,6 @@ import com.example.raovat_app.fragments.RevenueFragment
 import com.example.raovat_app.fragments.StoreConfirmFragment
 
 class StoreViewPage2Adapter(fragmentManager: FragmentManager, lifecycle: Lifecycle, private val idStore : String): FragmentStateAdapter(fragmentManager, lifecycle) {
-
-    private var productKey: Int? = null
-
-    fun setProductKey(key: Int) {
-        productKey = key
-    }
 
     override fun getItemCount(): Int {
         return 4
@@ -40,9 +35,10 @@ class StoreViewPage2Adapter(fragmentManager: FragmentManager, lifecycle: Lifecyc
             else -> {AddNewFragment().apply {
                 arguments = Bundle().apply {
                     putString("id", idStore )
-                    putInt("keyProduct", productKey!!)
                 }
             }}
+
         }
+
     }
 }

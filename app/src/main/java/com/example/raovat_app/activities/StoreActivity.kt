@@ -80,9 +80,11 @@ class StoreActivity : AppCompatActivity(), ResponseCallback, IProductOnClick {
     override fun onProductClick(key: Int) {
 
         Log.e("TAG", "onProductClick: $key", )
-        (binding.vp2ContentStore.adapter as StoreViewPage2Adapter).setProductKey(key)
+
         binding.vp2ContentStore.apply {
             currentItem = 3
+            val addNewFragment = supportFragmentManager.findFragmentByTag("f3") as AddNewFragment
+            addNewFragment.updateData(key)
         }
     }
 

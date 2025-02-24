@@ -43,11 +43,6 @@ interface APIInterface {
     //get info of product, store, image by id product
     @GET("product/{id}")
     fun getProductsById(@Path("id") id: Int): Call<ResponseBody>
-
-    /**
-     * @GET("/product/combination/{id}")
-     *     fun getCombinationById(@Path("id") id: Int): Call<ResponseBody>
-     */
     @POST("cart/add/{id}")
     fun addToCart(@Header("Authorization") token: String, @Path("id") id: Int, @Body cart: Cart): Call<ResponseBody>
     @POST("cart/update")
@@ -79,6 +74,6 @@ interface APIInterface {
     fun addAddress(@Header("Authorization") token : String, @Body address: Address): Call<ResponseBody>
     @GET("store/products/{id}")
     fun getProduct(@Path("id")id : Int): Call<ResponseBody>
-    @GET("store/product/{id}")
+    @GET("store/product/info/{id}")
     fun getInfoProduct(@Path("id")id: Int): Call<ResponseBody>
 }

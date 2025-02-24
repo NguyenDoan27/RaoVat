@@ -6,6 +6,7 @@ import com.example.raovat_app.models.StoreModel
 import com.example.raovat_app.models.StoreResult
 import com.example.raovat_app.others.PreferenceDataStore
 import com.example.raovat_app.interfaces.ResponseCallback
+import com.example.raovat_app.models.StoreResult2
 
 class StoreController(private val storeModel: StoreModel, private val callback: ResponseCallback) {
     suspend fun checkStore( accountFragment: AccountFragment, preferenceDataStore: PreferenceDataStore){
@@ -79,4 +80,14 @@ class StoreController(private val storeModel: StoreModel, private val callback: 
         }
     }
 
+    suspend fun getInfoProduct(id: Int){
+        when(val response = storeModel.getInfoProduct(id)){
+            is StoreResult2.Success<*, *, *> -> {
+                callback.onSuccess(Response.SuccessWithExtra(response.data1, response.data2))
+            }
+            is StoreResult2.Failure -> {
+                callback.onError(response.error)
+            }
+        }
+    }
 }
